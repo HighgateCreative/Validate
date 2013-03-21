@@ -195,6 +195,7 @@ sub val_html {
 
 sub val_email { 
 	my ($mand, $value) = @_;
+   if (not defined $value) { $value = ''; }
 	if ( !Email::Valid->address($value) && $mand ) { 
 		return ( undef, { msg => 'address is blank or not valid' }	);
 	} elsif ( !Email::Valid->address($value) && $value ) {
