@@ -207,7 +207,7 @@ sub val_email {
 
 sub val_selected {
 	my ($value) = @_;
-	if (!$value) {
+	if (! defined $value) {
 		return (undef, { msg => 'must be selected' });
 	} else {
 		return $value;
