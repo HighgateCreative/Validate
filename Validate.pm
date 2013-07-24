@@ -3,7 +3,6 @@ package Validate::Validate;
 use Email::Valid;
 use HTML::TagFilter;
 use HTML::Entities;
-use Data::Dumper;
 use Encode;
 use Encode::Guess;
 
