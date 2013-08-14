@@ -74,9 +74,9 @@ sub is_whole ($) {
 
 sub val_int {
 	my ($mand, $value) = @_;
-	if ( ( $value != 0 or not defined $value) && !$value && $mand ) {
+	if ( ( $value ne '0' or not defined $value) && !$value && $mand ) {
 		return (undef, { msg => 'cannot be blank.' });
-	} elsif (defined $value and $value !~ /^[-]?\d+$/) {
+	} elsif ( ( $value or $value eq '0' ) and $value !~ /^[-]?\d+$/) {
 		return (undef, { msg => 'can only use numbers' });
 	} else {
     	return ($value);
