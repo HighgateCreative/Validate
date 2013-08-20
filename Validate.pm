@@ -74,9 +74,9 @@ sub is_whole ($) {
 
 sub val_int {
 	my ($mand, $value) = @_;
-	if ( ($value != 0 && !$value or $value eq '') && $mand) {
+	if ( ( $value ne '0' or not defined $value) && !$value && $mand ) {
 		return (undef, { msg => 'cannot be blank.' });
-	} elsif ($value !~ /^[-]?\d+$/) {
+	} elsif ( ( $value or $value eq '0' ) and $value !~ /^[-]?\d+$/) {
 		return (undef, { msg => 'can only use numbers' });
 	} else {
     	return ($value);
@@ -127,6 +127,32 @@ sub val_input {
 		return (undef, { msg => 'is limited to '.$len.' characters' });
 	} elsif ($value && $value !~ /^([\w \.\,\-\(\)\?\:\;\"\!\'\/\n\r]*)$/) {
 		return (undef, { msg => 'can only use letters, numbers, spaces and -.,&:\'' });
+	} else {
+		my $tf = new HTML::TagFilter;
+		if ($value) {	# This is to prevent empty strings from returning as the folder name.
+			return ($tf->filter($1));	# $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
+		} else {
+			return '';	# Take that $1. Conditional statement to the face.
+		}
+	}
+}
+
+sub val_password {
+	my ($mand, $len, $value) = @_;
+
+	# To ensure the text is correctly encoded etc. SZ 7/12/12
+	#my $decoder = Encode::Guess->guess($value);	# First guess the decoder
+	#if (ref($decoder)){
+	#	$value = $decoder->decode($value);	# If a decoder is found, then decode.
+	#}
+	#$value = Encode::encode_utf8($value);	# If there is no decoder, assume its UTF8
+
+	if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
+		return (undef, { msg => 'cannot be blank' });
+	} elsif ($len && (length($value) > $len) ) {
+		return (undef, { msg => 'is limited to '.$len.' characters' });
+	} elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\{\}\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
+		return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
 	} else {
 		my $tf = new HTML::TagFilter;
 		if ($value) {	# This is to prevent empty strings from returning as the folder name.
